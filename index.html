@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esra Shop</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+}
+
+header{
+background:#008000;
+color:#fff;
+padding:20px;
+text-align:center;
+}
+
+header h1{
+margin:0;
+}
+
+.container{
+width:95%;
+margin:auto;
+padding:20px;
+}
+
+#search{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-bottom:20px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.card{
+background:#fff;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.2);
+padding:15px;
+text-align:center;
+}
+
+.card img{
+width:150px;
+height:150px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.price{
+font-size:22px;
+color:#008000;
+font-weight:bold;
+}
+
+.stock{
+color:#d60000;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🛒 Esra Shop</h1>
+<p>Cosmetic Products Price List</p>
+</header>
+
+<div class="container">
+
+<input type="text" id="search" placeholder="Search Product">
+
+<div id="products" class="grid"></div>
+
+</div>
+<script>
+
+const SHEET_ID = "1ArmmbHyb-nOz-vrobG2XywXzTIZGxRQFQhGVbjfak1k";
+const GID = "0";
+
+const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+
+fetch(url)
+.then(res => res.text())
+.then(data => {
+
+const json = JSON.parse(data.substring(47).slice(0,-2));
+
+let html = "";
+
+json.table.rows.forEach(row=>{
+
+let name = row.c[0] ? row.c[0].v : "";
+let price = row.c[1] ? row.c[1].v : "";
+let stock = row.c[2] ? row.c[2].v : "";
+let image = row.c[3] ? row.c[3].v : "";
+
+html += `
+<div class="card">
+<img src="${image}" alt="${name}">
+<h3>${name}</h3>
+<p class="price">₹${price}</p>
+<p class="stock">Stock : ${stock}</p>
+</div>
+`;
+
+});
+
+document.getElementById("products").innerHTML = html;
+
+});
+
+document.getElementById("search").addEventListener("keyup", function(){
+
+let value = this.value.toLowerCase();
+
+let cards = document.querySelectorAll(".card");
+
+cards.forEach(card=>{
+
+card.style.display =
+card.innerText.toLowerCase().includes(value)
+? "block"
+: "none";
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
